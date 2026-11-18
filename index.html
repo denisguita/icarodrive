@@ -27,7 +27,7 @@ const $=id=>document.getElementById(id), money=n=>Number(n||0).toLocaleString('p
 const STORE='icaro_drive_demo_v1';let db=JSON.parse(localStorage.getItem(STORE)||'{"contracts":[],"charges":[],"receipts":[],"vehicles":[{"model":"BYD Dolphin Mini 2027","plate":"","year":"2027","status":"Disponível"}]}');
 const save=()=>{localStorage.setItem(STORE,JSON.stringify(db));renderAll()};
 function addDays(s,n){let d=new Date(s+'T12:00:00');d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
-function nextDate(s,f,customDays){const n=({'Diária':1,'A cada 3 dias':3,'A cada 5 dias':5,'Semanal':7,'Quinzenal':15,'Mensal':30,'Personalizada':Math.max(1,Math.min(365,Number(customDays)||7))})[f]||7;return addDays(s,n)}
+function nextDate(s,f,customDays){if(f==='Mensal'){const d=new Date(s+'T12:00:00'),day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+1);const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(day,last));return d.toISOString().slice(0,10)}const n=({'Diária':1,'A cada 3 dias':3,'A cada 5 dias':5,'Semanal':7,'Quinzenal':15,'Personalizada':Math.max(1,Math.min(365,Number(customDays)||7))})[f]||7;return addDays(s,n)}
 function status(c){return c.status==='Pago'?'Pago':c.due<today()?'Vencido':c.status==='Parcial'?'Parcial':'Pendente'}
 function showPage(p){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('hidden',x.id!==p));document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=({dashboard:'Visão geral',contracts:'Contratos',charges:'Cobranças',receipts:'Recibos',fleet:'Veículos',drivers:'Motoristas'})[p];}
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
